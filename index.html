@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal TKJ Ultimate</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600;700&family=Inter:wght@400;600;800&display=swap');
+        
+        :root {
+            --neon-green: #10b981;
+            --neon-cyan: #06b6d4;
+            --bg-dark: #0f172a;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: #e2e8f0;
+            background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 70%);
+            min-height: 100vh;
+        }
+        
+        .font-mono { font-family: 'Fira Code', monospace; }
+        
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .tab-content.active { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--neon-cyan); }
+        
+        /* Terminal Scanline Effect */
+        .scanline {
+            position: relative;
+        }
+        .scanline::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 10; background-size: 100% 2px, 3px 100%; pointer-events: none;
+        }
+
+        /* UTP Cable Colors */
+        .color-w-g { background: repeating-linear-gradient(45deg, white, white 10px, #22c55e 10px, #22c55e 20px); }
+        .color-g { background-color: #22c55e; }
+        .color-w-o { background: repeating-linear-gradient(45deg, white, white 10px, #f97316 10px, #f97316 20px); }
+        .color-o { background-color: #f97316; }
+        .color-w-b { background: repeating-linear-gradient(45deg, white, white 10px, #3b82f6 10px, #3b82f6 20px); }
+        .color-b { background-color: #3b82f6; }
+        .color-w-br { background: repeating-linear-gradient(45deg, white, white 10px, #78350f 10px, #78350f 20px); }
+        .color-br { background-color: #78350f; }
+    </style>
+</head>
+<body class="antialiased overflow-x-hidden">
+
+<!-- NAVIGATION -->
+<nav class="sticky top-0 z-50 glass-panel border-b-0 border-cyan-900/50 shadow-[0_4px_20px_rgba(6,182,212,0.15)]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <div class="flex-shrink-0 flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_#10b981]"></div>
+                <span class="font-mono font-bold text-xl text-white tracking-widest">TKJ<span class="text-cyan-400">_NET</span></span>
+            </div>
+            <div class="hidden md:flex items-center text-emerald-400 font-mono text-xs border border-emerald-900/50 px-3 py-1 rounded bg-slate-900/50 shadow-inner">
+                SYS_TIME: <span id="sysClock" class="ml-2 font-bold">00:00:00</span>
+            </div>
+            <div class="hidden md:block overflow-x-auto no-scrollbar">
+                <div class="flex space-x-1 font-mono text-sm" id="navMenu">
+                    <button class="nav-btn active px-3 py-2 rounded-md text-cyan-400 bg-cyan-900/30 border border-cyan-400/50" data-target="dashboard-tab">./Dash</button>
+                    <button class="nav-btn px-3 py-2 rounded-md text-slate-400 hover:text-cyan-300" data-target="hardware-tab">./Hardware</button>
+                    <button class="nav-btn px-3 py-2 rounded-md text-slate-400 hover:text-cyan-300" data-target="calc-tab">./Kalkulator</button>
+                    <button class="nav-btn px-3 py-2 rounded-md text-slate-400 hover:text-cyan-300" data-target="lab-tab">./Lab_Tools</button>
+                    <button class="nav-btn px-3 py-2 rounded-md text-slate-400 hover:text-emerald-400" data-target="terminal-tab">./Terminal</button>
+                    <button class="nav-btn px-3 py-2 rounded-md text-slate-400 hover:text-cyan-300" data-target="wiki-tab">./Wiki</button>
+                    <button class="nav-btn px-3 py-2 rounded-md text-slate-400 hover:text-cyan-300" data-target="quiz-tab">./Kuis</button>
+                    <button class="nav-btn px-3 py-2 rounded-md text-slate-400 hover:text-rose-400" data-target="troubleshoot-tab">./Troubleshoot</button>
+                    <button class="nav-btn px-3 py-2 rounded-md text-slate-400 hover:text-orange-400" data-target="firewall-tab">./Firewall</button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Nav Menu (Scrollable horizontal) -->
+        <div class="md:hidden flex overflow-x-auto py-2 space-x-2 font-mono text-xs no-scrollbar border-t border-slate-700/50" id="navMenuMobile">
+            <!-- Populated via JS -->
+        </div>
+    </div>
+</nav>
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- ================= 1. DASHBOARD ================= -->
+    <section id="dashboard-tab" class="tab-content active">
+        <div class="text-center py-12">
+            <h1 class="text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400 mb-4">
+                SYSTEM_ONLINE
+            </h1>
+            <p class="text-slate-400 font-mono max-w-2xl mx-auto mb-8">Welcome to Ultimate TKJ Portal. Modul pembelajaran, simulasi jaringan, dan utilitas teknisi dalam satu environment.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="glass-panel p-6 rounded-xl border border-cyan-800/50 hover:border-cyan-400/80 transition cursor-pointer" onclick="switchTab('calc-tab')">
+                    <div class="text-3xl mb-2">🧮</div>
+                    <div class="font-bold text-slate-200">Subnet Calc</div>
+                    <div class="text-xs text-slate-500 font-mono mt-1">IP Math & Drill</div>
+                </div>
+                <div class="glass-panel p-6 rounded-xl border border-emerald-800/50 hover:border-emerald-400/80 transition cursor-pointer" onclick="switchTab('terminal-tab')">
+                    <div class="text-3xl mb-2">💻</div>
+                    <div class="font-bold text-slate-200">CLI Simulator</div>
+                    <div class="text-xs text-slate-500 font-mono mt-1">Ping, Nmap, ARP</div>
+                </div>
+                <div class="glass-panel p-6 rounded-xl border border-rose-800/50 hover:border-rose-400/80 transition cursor-pointer" onclick="switchTab('troubleshoot-tab')">
+                    <div class="text-3xl mb-2">🔧</div>
+                    <div class="font-bold text-slate-200">Troubleshoot</div>
+                    <div class="text-xs text-slate-500 font-mono mt-1">Network Flowchart</div>
+                </div>
+                <div class="glass-panel p-6 rounded-xl border border-purple-800/50 hover:border-purple-400/80 transition cursor-pointer" onclick="switchTab('hardware-tab')">
+                    <div class="text-3xl mb-2">⚙️</div>
+                    <div class="font-bold text-slate-200">Hardware DB</div>
+                    <div class="text-xs text-slate-500 font-mono mt-1">Server & Network</div>
+                </div>
+                <div class="glass-panel p-6 rounded-xl border border-orange-800/50 hover:border-orange-400/80 transition cursor-pointer" onclick="switchTab('firewall-tab')">
+                    <div class="text-3xl mb-2">🧱</div>
+                    <div class="font-bold text-slate-200">Firewall Lab</div>
+                    <div class="text-xs text-slate-500 font-mono mt-1">Simulator & Teori</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= 2. HARDWARE DB ================= -->
+    <section id="hardware-tab" class="tab-content">
+        <div id="hw-master">
+            <h2 class="text-3xl font-bold text-purple-400 mb-6 font-mono">> Hardware_Database</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6" id="hwGrid"></div>
+        </div>
+        <div id="hw-detail" class="hidden">
+            <button id="hwBackBtn" class="mb-6 text-purple-400 hover:text-purple-300 font-mono border border-purple-800 px-4 py-2 rounded bg-slate-900">&lt;- Back to Grid</button>
+            <div class="glass-panel p-8 rounded-2xl border-purple-900/50 flex flex-col md:flex-row gap-8">
+                <div class="text-9xl" id="hwDetailIcon"></div>
+                <div>
+                    <h2 class="text-4xl font-bold text-white mb-2" id="hwDetailTitle"></h2>
+                    <span class="text-sm font-mono bg-purple-900/50 text-purple-300 px-3 py-1 rounded" id="hwDetailType"></span>
+                    <p class="text-slate-300 mt-6 mb-4 text-lg" id="hwDetailDesc"></p>
+                    <h4 class="font-bold text-cyan-400 mb-2 font-mono">Spesifikasi Utama:</h4>
+                    <ul class="list-disc list-inside text-slate-400 space-y-1 font-mono text-sm" id="hwDetailSpecs"></ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= 3. KALKULATOR ================= -->
+    <section id="calc-tab" class="tab-content">
+        <h2 class="text-3xl font-bold text-cyan-400 mb-6 font-mono">> Network_Calculators</h2>
+        
+        <!-- MAIN SUBNET CALCULATOR -->
+        <div class="glass-panel rounded-2xl p-6 mb-8 border-cyan-900/50">
+            <h3 class="text-xl font-bold text-cyan-400 mb-4">IP Subnet Calculator (IPv4)</h3>
+            <div class="flex flex-col md:flex-row gap-4 mb-4">
+                <input type="text" id="ipInput" placeholder="IP Address (e.g., 192.168.1.1)" class="flex-grow bg-slate-900 border border-slate-700 text-white p-3 rounded focus:outline-none focus:border-cyan-400 font-mono">
+                <select id="prefixInput" class="w-full md:w-32 bg-slate-900 border border-slate-700 text-white p-3 rounded focus:outline-none font-mono"></select>
+                <button id="calcSubnetBtn" class="bg-cyan-700 hover:bg-cyan-600 text-white px-6 py-3 rounded font-bold transition-colors font-mono">Hitung</button>
+            </div>
+            <div id="subnetError" class="hidden bg-rose-900/50 border border-rose-500 text-rose-400 p-3 rounded mb-4 font-mono text-sm"></div>
+            <div id="subnetResultBox" class="hidden">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 font-mono text-sm mb-4">
+                    <div class="bg-slate-900 p-3 rounded border border-slate-800"><span class="text-slate-500 block text-xs">Network</span><span id="resNet" class="text-cyan-300 font-bold">-</span></div>
+                    <div class="bg-slate-900 p-3 rounded border border-slate-800"><span class="text-slate-500 block text-xs">Broadcast</span><span id="resBC" class="text-purple-300 font-bold">-</span></div>
+                    <div class="bg-slate-900 p-3 rounded border border-slate-800"><span class="text-slate-500 block text-xs">Subnet Mask</span><span id="resMask" class="text-emerald-300 font-bold">-</span></div>
+                    <div class="bg-slate-900 p-3 rounded border border-slate-800"><span class="text-slate-500 block text-xs">Total / Usable Host</span><span class="text-amber-300 font-bold"><span id="resTotal">-</span> / <span id="resUsable">-</span></span></div>
+                </div>
+                <div class="bg-slate-900 p-3 rounded border border-slate-800 font-mono text-sm mb-4">
+                    <span class="text-slate-500 block text-xs mb-1">Host Range (Usable)</span><span id="resRange" class="text-white font-bold">-</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-xs mb-4">
+                    <div class="bg-slate-900 p-3 rounded border border-slate-800"><span class="text-slate-500 block">Class / Type</span><span id="resClass" class="text-cyan-300"></span> - <span id="resType" class="text-cyan-300"></span></div>
+                    <div class="bg-slate-900 p-3 rounded border border-slate-800"><span id="resBinIP" class="block text-slate-400"></span><span id="resBinMask" class="block text-slate-400"></span></div>
+                </div>
+                <button id="copySubnetBtn" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded font-mono text-sm transition-colors border border-slate-600">Copy Text</button>
+            </div>
+        </div>
+
+        <!-- NEW: SUBNETTING DRILL -->
+        <div class="glass-panel rounded-2xl p-6 md:p-8 mb-8 border-amber-900/50">
+            <h3 class="text-xl font-bold text-amber-400 mb-2 border-b border-amber-900/50 pb-2">Subnetting Drill (Mode Latihan)</h3>
+            <p class="text-sm text-slate-400 mb-6 font-mono">Uji kecepatan hitung subnet Anda. Diberikan IP dan Prefix secara acak.</p>
+            
+            <div class="flex flex-col md:flex-row items-center gap-4 mb-6">
+                <div id="drillQuestion" class="w-full md:w-auto text-2xl md:text-3xl font-bold text-white font-mono bg-slate-900 px-6 py-3 rounded text-center shadow-inner">Klik 'Generate'</div>
+                <button id="drillGenBtn" class="w-full md:w-auto bg-amber-700 hover:bg-amber-600 px-6 py-3 rounded font-bold text-white transition-colors font-mono">Generate Soal</button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-sm mb-6">
+                <div>
+                    <label class="block text-slate-400 mb-1">Network Address</label>
+                    <input type="text" id="drillNet" placeholder="x.x.x.x" class="w-full bg-slate-900 border border-slate-700 text-white p-3 rounded focus:outline-none focus:border-amber-400 transition-colors">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">Broadcast Address</label>
+                    <input type="text" id="drillBc" placeholder="x.x.x.x" class="w-full bg-slate-900 border border-slate-700 text-white p-3 rounded focus:outline-none focus:border-amber-400 transition-colors">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">Subnet Mask</label>
+                    <input type="text" id="drillMask" placeholder="x.x.x.x" class="w-full bg-slate-900 border border-slate-700 text-white p-3 rounded focus:outline-none focus:border-amber-400 transition-colors">
+                </div>
+            </div>
+            
+            <button id="drillCheckBtn" class="w-full bg-cyan-700 hover:bg-cyan-600 text-white py-3 rounded font-bold mb-4 transition-colors font-mono disabled:opacity-50" disabled>Cek Jawaban</button>
+            <div id="drillFeedback" class="text-center font-bold text-lg hidden p-3 rounded"></div>
+        </div>
+
+        <!-- BASE CONVERTER & BANDWIDTH -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div class="glass-panel rounded-2xl p-6">
+                <h3 class="text-xl font-bold text-cyan-400 mb-4">Base Converter (Auto)</h3>
+                <div class="space-y-4 font-mono text-sm">
+                    <div>
+                        <label class="block text-slate-400 mb-1">Decimal (Base 10)</label>
+                        <input type="number" id="convDec" class="w-full bg-slate-900/80 border border-cyan-800 text-white px-3 py-2 rounded focus:outline-none focus:border-cyan-400">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">Binary (Base 2)</label>
+                        <input type="text" id="convBin" class="w-full bg-slate-900/80 border border-cyan-800 text-emerald-400 px-3 py-2 rounded focus:outline-none focus:border-emerald-400">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">Hexadecimal (Base 16)</label>
+                        <input type="text" id="convHex" class="w-full bg-slate-900/80 border border-cyan-800 text-purple-400 px-3 py-2 rounded focus:outline-none focus:border-purple-400 uppercase">
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-6">
+                <h3 class="text-xl font-bold text-cyan-400 mb-4">Bandwidth / Download Time</h3>
+                <div class="grid grid-cols-2 gap-4 font-mono text-sm mb-4">
+                    <div>
+                        <label class="block text-slate-400 mb-1">File Size</label>
+                        <div class="flex">
+                            <input type="number" id="bwSize" class="w-2/3 bg-slate-900/80 border border-cyan-800 text-white px-2 py-2 rounded-l focus:outline-none focus:border-cyan-400">
+                            <select id="bwUnit" class="w-1/3 bg-slate-800 border border-cyan-800 text-white px-1 py-2 rounded-r"><option value="GB">GB</option><option value="MB">MB</option></select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">Speed</label>
+                        <div class="flex">
+                            <input type="number" id="bwSpeed" class="w-2/3 bg-slate-900/80 border border-cyan-800 text-white px-2 py-2 rounded-l focus:outline-none focus:border-cyan-400">
+                            <select id="bwSpeedUnit" class="w-1/3 bg-slate-800 border border-cyan-800 text-white px-1 py-2 rounded-r"><option value="Mbps">Mbps</option><option value="MBps">MB/s</option></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-slate-900/50 border border-emerald-800/50 rounded p-3 text-center font-mono">
+                    <span class="text-slate-400 text-xs">Estimasi Waktu: </span>
+                    <span id="bwResult" class="text-xl font-bold text-emerald-400">00:00:00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- RAID -->
+        <div class="glass-panel rounded-2xl p-6">
+            <h3 class="text-xl font-bold text-emerald-400 mb-4">RAID Capacity Simulator</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono mb-6">
+                <div>
+                    <label class="block text-slate-400 text-sm mb-1">Kapasitas 1 Disk</label>
+                    <div class="flex">
+                        <input type="number" id="raidSize" class="w-2/3 bg-slate-900/80 border border-cyan-800 text-white px-3 py-2 rounded-l focus:outline-none">
+                        <select id="raidUnit" class="w-1/3 bg-slate-800 border border-cyan-800 text-white px-2 py-2 rounded-r"><option value="TB">TB</option><option value="GB">GB</option></select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-slate-400 text-sm mb-1">Jumlah Disk (Total)</label>
+                    <input type="number" id="raidCount" min="2" class="w-full bg-slate-900/80 border border-cyan-800 text-white px-3 py-2 rounded focus:outline-none">
+                </div>
+                <div class="flex items-end">
+                    <button id="calcRaidBtn" class="w-full bg-cyan-700 hover:bg-cyan-600 text-white font-bold py-2 rounded transition-colors">Hitung RAID</button>
+                </div>
+            </div>
+            <div class="overflow-x-auto border border-slate-700 rounded-lg">
+                <table class="w-full text-left font-mono text-sm">
+                    <thead class="bg-slate-800 text-cyan-300">
+                        <tr><th class="p-3">Tipe RAID</th><th class="p-3">Usable Space</th><th class="p-3">Parity/Wasted</th><th class="p-3">Fault Tolerance</th></tr>
+                    </thead>
+                    <tbody id="raidResults" class="text-slate-300 divide-y divide-slate-700/50 bg-slate-900/50">
+                        <tr><td colspan="4" class="p-4 text-center text-slate-500">Masukkan data untuk melihat hasil.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- NEW: IPv6 EXPANDER -->
+        <div class="glass-panel rounded-2xl p-6">
+            <h3 class="text-xl font-bold text-purple-400 mb-4 border-b border-purple-900/50 pb-2">IPv6 Expander / Compressor</h3>
+            <div class="flex flex-col gap-4 font-mono text-sm">
+                <div>
+                    <label class="block text-slate-400 mb-1">IPv6 Address</label>
+                    <div class="flex">
+                        <input type="text" id="ipv6Input" placeholder="Contoh: 2001:db8::1" class="w-full bg-slate-900/80 border border-cyan-800 text-white px-3 py-2 rounded-l focus:outline-none focus:border-purple-400">
+                        <button id="calcIpv6Btn" class="bg-purple-700 hover:bg-purple-600 text-white px-4 py-2 rounded-r font-bold transition-colors">Process</button>
+                    </div>
+                </div>
+                <div class="bg-slate-900/50 border border-slate-700 rounded p-4">
+                    <div class="mb-2"><span class="text-slate-500 block text-xs">Expanded (Full 128-bit):</span> <span id="ipv6Expanded" class="text-purple-300 break-all font-bold tracking-widest">-</span></div>
+                    <div><span class="text-slate-500 block text-xs">Compressed:</span> <span id="ipv6Compressed" class="text-emerald-300 break-all font-bold tracking-widest">-</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= 4. LAB & TOOLS ================= -->
+    <section id="lab-tab" class="tab-content">
+        <h2 class="text-3xl font-bold text-cyan-400 mb-6 font-mono">> Lab_Utilities</h2>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- UTP GUIDE -->
+            <div class="glass-panel rounded-2xl p-6">
+                <h3 class="text-xl font-bold text-emerald-400 mb-4">Warna Kabel UTP (Crimping)</h3>
+                <div class="space-y-6">
+                    <div>
+                        <div class="text-sm font-bold text-white mb-2">T568A (Crossover End 1)</div>
+                        <div class="flex h-12 rounded border border-slate-700 overflow-hidden">
+                            <div class="flex-1 color-w-g"></div><div class="flex-1 color-g"></div>
+                            <div class="flex-1 color-w-o"></div><div class="flex-1 color-b"></div>
+                            <div class="flex-1 color-w-b"></div><div class="flex-1 color-o"></div>
+                            <div class="flex-1 color-w-br"></div><div class="flex-1 color-br"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-sm font-bold text-white mb-2">T568B (Straight / Cross End 2)</div>
+                        <div class="flex h-12 rounded border border-slate-700 overflow-hidden">
+                            <div class="flex-1 color-w-o"></div><div class="flex-1 color-o"></div>
+                            <div class="flex-1 color-w-g"></div><div class="flex-1 color-b"></div>
+                            <div class="flex-1 color-w-b"></div><div class="flex-1 color-g"></div>
+                            <div class="flex-1 color-w-br"></div><div class="flex-1 color-br"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEW: FIBER OPTIC COLOR CODE -->
+            <div class="glass-panel rounded-2xl p-6">
+                <h3 class="text-xl font-bold text-amber-400 mb-4">Standar Warna Core Fiber Optic</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs font-mono font-bold text-center">
+                    <div class="bg-blue-500 text-white py-2 rounded shadow-sm">1. Biru</div>
+                    <div class="bg-orange-500 text-white py-2 rounded shadow-sm">2. Oranye</div>
+                    <div class="bg-green-500 text-white py-2 rounded shadow-sm">3. Hijau</div>
+                    <div class="bg-amber-700 text-white py-2 rounded shadow-sm">4. Coklat</div>
+                    <div class="bg-slate-400 text-slate-900 py-2 rounded shadow-sm">5. Abu-abu</div>
+                    <div class="bg-white text-slate-900 py-2 rounded border border-slate-300 shadow-sm">6. Putih</div>
+                    <div class="bg-red-500 text-white py-2 rounded shadow-sm">7. Merah</div>
+                    <div class="bg-black text-white py-2 rounded border border-slate-700 shadow-sm">8. Hitam</div>
+                    <div class="bg-yellow-400 text-slate-900 py-2 rounded shadow-sm">9. Kuning</div>
+                    <div class="bg-purple-500 text-white py-2 rounded shadow-sm">10. Ungu</div>
+                    <div class="bg-pink-400 text-white py-2 rounded shadow-sm">11. Pink</div>
+                    <div class="bg-cyan-300 text-slate-900 py-2 rounded shadow-sm">12. Toska</div>
+                </div>
+            </div>
+            
+            <!-- NEW: PORT SCANNER SIMULATOR -->
+            <div class="glass-panel rounded-2xl p-6 lg:col-span-2">
+                <h3 class="text-xl font-bold text-rose-400 mb-4 flex items-center gap-2"><span>📡</span> Network Port Scanner (Visualizer)</h3>
+                <div class="flex gap-2 mb-4 font-mono text-sm">
+                    <input type="text" id="scanTarget" placeholder="Target IP (contoh: 192.168.1.1)" class="w-full md:w-1/2 bg-slate-900 border border-slate-700 text-white px-3 py-2 rounded focus:outline-none focus:border-rose-400">
+                    <button id="startScanBtn" class="bg-rose-700 hover:bg-rose-600 text-white px-4 py-2 rounded font-bold transition-colors w-32 border border-rose-500 shadow-[0_0_10px_rgba(225,29,72,0.3)]">Mulai Scan</button>
+                </div>
+                <div class="w-full bg-slate-900 rounded-full h-3 mb-4 border border-slate-700 overflow-hidden shadow-inner">
+                    <div id="scanProgress" class="bg-gradient-to-r from-rose-700 to-rose-400 h-3 rounded-full w-0 transition-all duration-300"></div>
+                </div>
+                <div id="scanResults" class="grid grid-cols-2 md:grid-cols-4 gap-3 font-mono text-xs text-slate-300">
+                    <!-- Results injected here -->
+                </div>
+            </div>
+
+            <!-- LAB NOTES -->
+            <div class="glass-panel rounded-2xl p-6 flex flex-col">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-cyan-400">Local Lab Notes</h3>
+                    <span id="noteStatus" class="text-xs text-emerald-400 opacity-0 transition-opacity font-mono">Tersimpan!</span>
+                </div>
+                <textarea id="labNotes" placeholder="// Ketik script atau catatan disini. Otomatis tersimpan ke LocalStorage..." class="flex-grow w-full bg-slate-900/80 border border-cyan-800 text-cyan-50 p-4 rounded focus:outline-none focus:border-cyan-400 font-mono text-sm resize-none min-h-[150px]"></textarea>
+                <div class="flex justify-between mt-3 font-mono text-xs">
+                    <button id="exportNotesBtn" class="text-cyan-300 hover:text-white border border-cyan-700 px-3 py-1 rounded bg-slate-800 transition-colors">↓ Download .txt</button>
+                    <button id="clearNotesBtn" class="text-rose-400 hover:text-rose-300 transition-colors">Clear All</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- MIKROTIK GENERATOR -->
+            <div class="glass-panel rounded-2xl p-6">
+                <h3 class="text-xl font-bold text-cyan-400 mb-4">MikroTik CLI Generator</h3>
+                <div class="space-y-3 font-mono text-sm mb-4">
+                    <div><label class="text-slate-400 block mb-1">IP WAN (Ether1)</label><input type="text" id="sgWan" class="w-full bg-slate-900 border border-slate-700 text-white p-2 rounded" placeholder="192.168.1.2/24"></div>
+                    <div><label class="text-slate-400 block mb-1">Gateway</label><input type="text" id="sgGw" class="w-full bg-slate-900 border border-slate-700 text-white p-2 rounded" placeholder="192.168.1.1"></div>
+                    <button id="sgBtn" class="w-full bg-cyan-700 hover:bg-cyan-600 text-white p-2 rounded font-bold mt-2">Generate Script</button>
+                </div>
+                <textarea id="sgOutput" readonly class="w-full h-32 bg-black border border-slate-700 text-emerald-400 p-3 rounded focus:outline-none font-mono text-xs resize-none" placeholder="# Hasil script..."></textarea>
+            </div>
+
+            <!-- ROUTER PASSWORDS -->
+            <div class="glass-panel rounded-2xl p-6 overflow-hidden flex flex-col">
+                <h3 class="text-xl font-bold text-cyan-400 mb-4">Default Router Passwords</h3>
+                <div class="overflow-y-auto flex-grow h-64 border border-slate-700 rounded-lg no-scrollbar">
+                    <table class="w-full text-left font-mono text-sm">
+                        <thead class="bg-slate-800 text-cyan-300 sticky top-0">
+                            <tr><th class="p-2">Brand</th><th class="p-2">IP/URL</th><th class="p-2">User/Pass</th></tr>
+                        </thead>
+                        <tbody class="text-slate-300 divide-y divide-slate-700/50 bg-slate-900/50">
+                            <tr><td class="p-2">MikroTik</td><td class="p-2">192.168.88.1</td><td class="p-2">admin / (kosong)</td></tr>
+                            <tr><td class="p-2">Cisco</td><td class="p-2">192.168.1.1</td><td class="p-2">cisco / cisco</td></tr>
+                            <tr><td class="p-2">TP-Link</td><td class="p-2">192.168.0.1</td><td class="p-2">admin / admin</td></tr>
+                            <tr><td class="p-2">Ubiquiti</td><td class="p-2">192.168.1.20</td><td class="p-2">ubnt / ubnt</td></tr>
+                            <tr><td class="p-2">ZTE</td><td class="p-2">192.168.1.1</td><td class="p-2">user / user</td></tr>
+                            <tr><td class="p-2">Huawei</td><td class="p-2">192.168.100.1</td><td class="p-2">telecomadmin/admintelecom</td></tr>
+                            <tr><td class="p-2">D-Link</td><td class="p-2">192.168.0.1</td><td class="p-2">admin / (kosong)</td></tr>
+                            <tr><td class="p-2">Asus</td><td class="p-2">192.168.1.1</td><td class="p-2">admin / admin</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= 5. TERMINAL CLI ================= -->
+    <section id="terminal-tab" class="tab-content h-[80vh]">
+        <div class="w-full h-full bg-black border-2 border-slate-800 rounded-xl shadow-[0_0_30px_rgba(16,185,129,0.15)] flex flex-col overflow-hidden font-mono text-sm relative scanline">
+            <!-- Window Header -->
+            <div class="bg-slate-900 px-4 py-2 flex items-center justify-between border-b border-slate-800 z-20 relative">
+                <div class="flex gap-2">
+                    <div class="w-3 h-3 rounded-full bg-rose-500 shadow-[0_0_5px_#f43f5e]"></div>
+                    <div class="w-3 h-3 rounded-full bg-amber-500 shadow-[0_0_5px_#f59e0b]"></div>
+                    <div class="w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_5px_#10b981]"></div>
+                </div>
+                <div class="text-slate-400 text-xs">root@tkj-server:~</div>
+                <div></div>
+            </div>
+            
+            <!-- Terminal Output Area -->
+            <div id="termOutput" class="flex-grow p-4 overflow-y-auto text-emerald-400 whitespace-pre-wrap leading-relaxed z-20 relative">
+TKJ Interactive Terminal [Version 2.0.0]
+(c) 2026 TKJ Systems. All rights reserved.
+
+Ketik 'help' untuk melihat daftar perintah.
+<br><br></div>
+
+            <!-- Terminal Input Line -->
+            <div class="p-4 bg-transparent flex items-center text-emerald-400 pt-0 z-20 relative">
+                <span class="mr-2 text-cyan-400 font-bold">root@tkj-server:~#</span>
+                <input type="text" id="termInput" class="flex-grow bg-transparent border-none outline-none text-emerald-400 caret-emerald-400" autocomplete="off" spellcheck="false" autofocus>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= 6. KUIS ================= -->
+    <section id="quiz-tab" class="tab-content">
+        <div class="max-w-2xl mx-auto">
+            <h2 class="text-3xl font-bold text-cyan-400 mb-2 font-mono text-center">> Network_Quiz</h2>
+            <p class="text-slate-400 text-center mb-8 font-mono text-sm">Uji pengetahuan jaringanmu. 10 Soal Acak.</p>
+            
+            <div class="glass-panel rounded-2xl p-8 border-cyan-900/50 relative min-h-[300px] flex flex-col">
+                <!-- Start Screen -->
+                <div id="quizStartScreen" class="text-center my-auto block animate-fadeIn">
+                    <div class="text-5xl mb-6">🎯</div>
+                    <button id="startQuizBtn" class="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-[0_0_15px_rgba(6,182,212,0.4)] font-mono">MULAI KUIS</button>
+                </div>
+                
+                <!-- QnA Screen -->
+                <div id="quizQnaScreen" class="hidden animate-fadeIn flex-grow flex flex-col">
+                    <div class="flex justify-between items-center mb-6 font-mono text-sm text-slate-400 border-b border-slate-700 pb-2">
+                        <span id="quizProgress">Soal 1 / 10</span>
+                        <span id="quizScoreUI" class="text-emerald-400 font-bold">Skor: 0</span>
+                    </div>
+                    <h3 id="quizQuestion" class="text-xl font-bold text-white mb-6"></h3>
+                    <div id="quizOptions" class="grid grid-cols-1 gap-3 mb-6">
+                        <!-- Buttons injected via JS -->
+                    </div>
+                    <div class="mt-auto text-right">
+                        <button id="nextQuizBtn" class="bg-cyan-700 text-white px-6 py-2 rounded border border-cyan-600 font-mono hover:bg-cyan-600 transition-colors hidden">Selanjutnya -></button>
+                    </div>
+                </div>
+
+                <!-- Result Screen -->
+                <div id="quizResultScreen" class="hidden text-center my-auto animate-fadeIn">
+                    <h3 class="text-2xl font-bold text-white mb-2">Kuis Selesai!</h3>
+                    <div id="finalScore" class="text-5xl font-bold text-cyan-400 mb-4 py-4"></div>
+                    <p id="quizFeedback" class="text-slate-300 mb-8 font-mono"></p>
+                    <button id="retryQuizBtn" class="bg-slate-800 hover:bg-slate-700 text-white px-6 py-2 rounded-lg border border-slate-600 font-mono">Coba Lagi</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= 7. WIKI ================= -->
+    <section id="wiki-tab" class="tab-content">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+            <h2 class="text-3xl font-bold text-cyan-400 font-mono">> Ensiklopedia_TKJ</h2>
+            <input type="text" id="wikiSearch" placeholder="Cari istilah (contoh: OSI, Router)..." class="w-full md:w-72 bg-slate-900/80 border border-cyan-800 text-white px-4 py-2 rounded-lg focus:outline-none focus:border-cyan-400 font-mono text-sm">
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="wikiGrid">
+            <!-- Injected via JS -->
+        </div>
+    </section>
+
+    <!-- ================= 8. TROUBLESHOOT ================= -->
+    <section id="troubleshoot-tab" class="tab-content">
+        <div class="max-w-3xl mx-auto text-center mb-8">
+            <h2 class="text-3xl font-bold text-rose-400 font-mono mb-2">> Network_Diagnostics</h2>
+            <p class="text-slate-400 text-sm font-mono">Flowchart interaktif untuk mencari masalah jaringan secara logis.</p>
+        </div>
+        <div class="max-w-3xl mx-auto glass-panel rounded-3xl p-8 border-rose-900/30 shadow-[0_0_20px_rgba(244,63,94,0.1)] relative min-h-[350px] flex flex-col justify-center items-center text-center">
+            <div id="tsQuestionArea" class="w-full animate-fadeIn block">
+                <div class="text-5xl mb-6">⚙️</div>
+                <h3 id="tsText" class="text-xl md:text-2xl font-bold text-slate-100 mb-8 leading-relaxed font-mono">
+                    Sistem diagnosis jaringan aktif.<br>Mulai deteksi sekarang.
+                </h3>
+                <div id="tsButtons" class="flex flex-wrap justify-center gap-4 font-mono transition-opacity">
+                    <button id="tsStartBtn" class="bg-rose-600 hover:bg-rose-500 text-white px-8 py-3 rounded-xl transition-all shadow-[0_0_15px_rgba(244,63,94,0.3)]">Mulai Diagnosis</button>
+                </div>
+            </div>
+            <button id="tsResetBtn" class="absolute top-4 right-4 text-xs text-slate-500 hover:text-slate-300 font-mono hidden">[ Restart ]</button>
+        </div>
+    </section>
+
+    <!-- ================= 9. FIREWALL ================= -->
+    <section id="firewall-tab" class="tab-content">
+        <h2 class="text-3xl font-bold text-orange-400 mb-6 font-mono">> Firewall_Learning_Center</h2>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+            <!-- Theory Section -->
+            <div class="lg:col-span-1 space-y-6">
+                <div class="glass-panel p-6 rounded-2xl border-orange-900/30">
+                    <h3 class="text-xl font-bold text-white mb-3">Tipe-Tipe Firewall</h3>
+                    <ul class="space-y-3 text-sm text-slate-300">
+                        <li><strong class="text-orange-400">Packet Filtering:</strong> Memeriksa IP dan Port pada header paket secara individu tanpa melihat status koneksi. (Cepat tapi kurang pintar).</li>
+                        <li><strong class="text-orange-400">Stateful Inspection:</strong> Melacak status koneksi aktif (established, new) sehingga lebih aman dan mencegah intrusi manipulasi paket.</li>
+                        <li><strong class="text-orange-400">Proxy Firewall:</strong> Menjadi perantara antara klien dan server, menyembunyikan identitas asli klien internal.</li>
+                        <li><strong class="text-orange-400">Next-Gen Firewall (NGFW):</strong> Menggabungkan firewall tradisional dengan IPS/IDS, Antivirus, dan Deep Packet Inspection (DPI).</li>
+                    </ul>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl border-orange-900/30">
+                    <h3 class="text-xl font-bold text-white mb-3">Arsitektur DMZ</h3>
+                    <p class="text-sm text-slate-300 mb-2"><strong>Demilitarized Zone (DMZ)</strong> adalah subnetwork yang mengekspos layanan publik (seperti Web Server, Mail Server) ke internet (WAN).</p>
+                    <p class="text-sm text-slate-300">Tujuannya agar jika server di DMZ diretas, LAN internal perusahaan tetap aman di balik lapis firewall sekunder.</p>
+                </div>
+            </div>
+
+            <!-- Simulator Section -->
+            <div class="lg:col-span-2 glass-panel p-6 rounded-2xl flex flex-col border-cyan-900/30">
+                <h3 class="text-xl font-bold text-cyan-400 mb-4 flex items-center gap-2"><span>🛡️</span> Interactive Rule Simulator</h3>
+                <p class="text-xs text-slate-400 font-mono mb-4">Mekanisme Top-Down: Aturan dibaca dari nomor 1 ke bawah. Eksekusi berhenti saat paket cocok dengan salah satu aturan.</p>
+                
+                <!-- Rule Builder Form -->
+                <div class="grid grid-cols-2 md:grid-cols-6 gap-2 mb-4 font-mono text-xs">
+                    <select id="fwAction" class="bg-slate-900 border border-slate-700 text-white p-2 rounded"><option value="ALLOW">ALLOW</option><option value="DROP">DROP</option></select>
+                    <select id="fwProto" class="bg-slate-900 border border-slate-700 text-white p-2 rounded"><option value="ANY">ANY</option><option value="TCP">TCP</option><option value="UDP">UDP</option><option value="ICMP">ICMP</option></select>
+                    <input type="text" id="fwSrc" placeholder="Src IP (e.g. ANY, 10.0.0.1)" class="bg-slate-900 border border-slate-700 text-white p-2 rounded md:col-span-1">
+                    <input type="text" id="fwDst" placeholder="Dst IP (e.g. ANY, 8.8.8.8)" class="bg-slate-900 border border-slate-700 text-white p-2 rounded md:col-span-1">
+                    <input type="text" id="fwPort" placeholder="Dst Port (ANY, 80)" class="bg-slate-900 border border-slate-700 text-white p-2 rounded md:col-span-1">
+                    <button id="fwAddRuleBtn" class="bg-cyan-700 hover:bg-cyan-600 text-white p-2 rounded font-bold transition-colors md:col-span-1">Add Rule</button>
+                </div>
+
+                <!-- Rule Table -->
+                <div class="overflow-x-auto border border-slate-700 rounded-lg mb-6">
+                    <table class="w-full text-left font-mono text-xs">
+                        <thead class="bg-slate-800 text-cyan-300">
+                            <tr><th class="p-2 w-10">#</th><th class="p-2">Action</th><th class="p-2">Protocol</th><th class="p-2">Src IP</th><th class="p-2">Dst IP</th><th class="p-2">Dst Port</th><th class="p-2 text-center">Del</th></tr>
+                        </thead>
+                        <tbody id="fwRulesBody" class="text-slate-300 divide-y divide-slate-700/50 bg-slate-900/50">
+                            <!-- Injected rules -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Packet Tester -->
+                <div class="mt-auto bg-slate-900/80 p-4 rounded-xl border border-orange-900/50">
+                    <h4 class="font-bold text-orange-400 mb-3 text-sm">Uji Kirim Paket Jaringan</h4>
+                    <div class="flex flex-wrap gap-2 font-mono text-xs mb-3">
+                        <input type="text" id="testSrc" placeholder="Source IP" class="bg-slate-800 border border-slate-600 text-white p-2 rounded flex-1 min-w-[100px]" value="192.168.1.10">
+                        <input type="text" id="testDst" placeholder="Dest IP" class="bg-slate-800 border border-slate-600 text-white p-2 rounded flex-1 min-w-[100px]" value="8.8.8.8">
+                        <select id="testProto" class="bg-slate-800 border border-slate-600 text-white p-2 rounded w-20"><option>TCP</option><option>UDP</option><option>ICMP</option></select>
+                        <input type="text" id="testPort" placeholder="Port" class="bg-slate-800 border border-slate-600 text-white p-2 rounded w-16" value="80">
+                        <button id="fwTestBtn" class="bg-orange-700 hover:bg-orange-600 text-white px-4 py-2 rounded font-bold transition-colors">TEST</button>
+                    </div>
+                    <div id="fwTestResult" class="hidden text-center p-3 rounded font-bold text-lg font-mono mt-2"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<script>
+    // System Core - Fully wrapped to ensure zero execution leaks
+    document.addEventListener('DOMContentLoaded', () => {
+
+        /* ================= 1. TAB NAVIGATION ================= */
+        const desktopNav = document.getElementById('navMenu');
+        const mobileNav = document.getElementById('navMenuMobile');
+        mobileNav.innerHTML = desktopNav.innerHTML; // Clone for mobile
+
+        // Real-Time System Clock
+        setInterval(() => {
+            const clock = document.getElementById('sysClock');
+            if(clock) clock.textContent = new Date().toLocaleTimeString('id-ID', {hour12: false});
+        }, 1000);
+
+        window.switchTab = function(targetId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active', 'text-cyan-400', 'bg-cyan-900/30', 'border-cyan-400/50', 'text-rose-400', 'bg-rose-900/30', 'border-rose-400/50', 'text-orange-400', 'bg-orange-900/30', 'border-orange-400/50');
+                btn.classList.add('text-slate-400', 'border-transparent');
+            });
+
+            const targetTab = document.getElementById(targetId);
+            if(targetTab) targetTab.classList.add('active');
+
+            document.querySelectorAll(`.nav-btn[data-target="${targetId}"]`).forEach(btn => {
+                btn.classList.remove('text-slate-400', 'border-transparent');
+                if (targetId === 'troubleshoot-tab') {
+                    btn.classList.add('active', 'text-rose-400', 'bg-rose-900/30', 'border-rose-400/50');
+                } else if (targetId === 'firewall-tab') {
+                    btn.classList.add('active', 'text-orange-400', 'bg-orange-900/30', 'border-orange-400/50');
+                } else {
+                    btn.classList.add('active', 'text-cyan-400', 'bg-cyan-900/30', 'border-cyan-400/50');
+                }
+            });
+            
+            if (targetId === 'terminal-tab') setTimeout(() => document.getElementById('termInput').focus(), 100);
+        };
+
+        document.body.addEventListener('click', e => {
+            if(e.target.classList.contains('nav-btn')) switchTab(e.target.getAttribute('data-target'));
+        });
+
+        /* ================= 2. HARDWARE DB ================= */
+        const hwData = [
+            { id: 1, title: 'Router MikroTik', type: 'Network', icon: '🖧', desc: 'Perangkat jaringan khusus untuk routing dan manajemen bandwidth.', specs: ['RouterOS', 'Firewall / NAT', 'Hotspot Gateway', 'BGP / OSPF Routing'] },
+            { id: 2, title: 'Switch Manageable', type: 'Network', icon: '🎛️', desc: 'Konsentrator jaringan yang mendukung konfigurasi VLAN.', specs: ['VLAN (802.1Q)', 'Spanning Tree', 'Port Security', 'Gigabit Ethernet'] },
+            { id: 3, title: 'NIC / LAN Card', type: 'Hardware', icon: '💳', desc: 'Network Interface Card, menjembatani PC ke jaringan.', specs: ['RJ-45 Port', 'MAC Address bawaan', '10/100/1000 Mbps', 'PCIe Interface'] },
+            { id: 4, title: 'Kabel UTP', type: 'Media', icon: '🔌', desc: 'Unshielded Twisted Pair, media transmisi tembaga standar.', specs: ['Cat5e / Cat6', 'Max 100 meter', 'Konektor RJ-45', '8 Dawai warna'] },
+            { id: 5, title: 'Access Point', type: 'Wireless', icon: '📡', desc: 'Pemancar sinyal Wi-Fi dari jaringan kabel ke nirkabel.', specs: ['802.11 b/g/n/ac/ax', 'SSID Broadcast', 'WPA2/WPA3 Security', 'PoE Support'] },
+            { id: 6, title: 'Fiber Optic', type: 'Media', icon: '⚡', desc: 'Media transmisi menggunakan cahaya, kecepatan sangat tinggi.', specs: ['Kaca / Plastik', 'Kebal interferensi', 'Single/Multi mode', 'Jarak tempuh KM'] },
+            { id: 7, title: 'Patch Panel', type: 'Infrastructure', icon: '🗄️', desc: 'Panel pasif untuk merapikan terminasi kabel UTP sebelum ke Switch.', specs: ['24 / 48 Port', 'Rackmount 1U', 'RJ45 Keystone', 'Cable Management'] },
+            { id: 8, title: 'Server (Rackmount)', type: 'Hardware', icon: '🖥️', desc: 'Komputer spesifikasi tinggi yang didesain menyala 24/7 untuk melayani klien.', specs: ['Xeon/EPYC CPU', 'ECC RAM', 'RAID Storage', 'Redundant PSU'] },
+            { id: 9, title: 'Hardware Firewall', type: 'Security', icon: '🧱', desc: 'Perangkat khusus pengaman jaringan (Next-Gen Firewall).', specs: ['Deep Packet Inspection', 'IPS/IDS', 'VPN Gateway', 'Web Filtering'] },
+            { id: 10, title: 'UPS', type: 'Power', icon: '🔋', desc: 'Uninterruptible Power Supply, baterai cadangan saat listrik mati.', specs: ['Surge Protection', 'AVR (Stabilizer)', 'Lead-Acid Battery', 'Runtime rating'] },
+            { id: 11, title: 'SFP Transceiver', type: 'FTTH / Media', icon: '🗼', desc: 'Small Form-factor Pluggable. Modul optik untuk switch ke koneksi fiber.', specs: ['Hot-pluggable', '1G/10G/40G/100G', 'Single/Multi Mode', 'LC/SC Connector'] },
+            { id: 12, title: 'OLT (Optical Line Terminal)', type: 'FTTH / ISP', icon: '🏢', desc: 'Perangkat pusat provider (ISP) yang memancarkan sinyal ke pelanggan GPON.', specs: ['PON Ports', 'Splitter Support (1:64)', 'Uplink 10G/100G', 'Manajemen Bandwidth OLT'] },
+            { id: 13, title: 'ONT / ONU', type: 'FTTH / Client', icon: '🏠', desc: 'Optical Network Terminal. Modem fiber optic di sisi rumah pelanggan.', specs: ['GPON / EPON', 'Wi-Fi Access Point', 'Port LAN / POTS', 'Konversi Cahaya ke Elektrik'] }
+        ];
+
+        const hwGrid = document.getElementById('hwGrid');
+        hwData.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'glass-panel p-6 rounded-2xl cursor-pointer hover:border-cyan-400 transition-all border border-slate-700/50 group relative overflow-hidden';
+            div.innerHTML = `
+                <div class="text-4xl mb-4 group-hover:scale-110 transition-transform">${item.icon}</div>
+                <h3 class="text-xl font-bold text-white mb-1">${item.title}</h3>
+                <span class="text-xs font-mono bg-slate-800 text-slate-300 px-2 py-1 rounded absolute top-4 right-4">${item.type}</span>
+            `;
+            div.onclick = () => showHwDetail(item);
+            hwGrid.appendChild(div);
+        });
+
+        const hwMaster = document.getElementById('hw-master');
+        const hwDetail = document.getElementById('hw-detail');
+        
+        function showHwDetail(item) {
+            hwMaster.classList.add('hidden');
+            hwDetail.classList.remove('hidden');
+            document.getElementById('hwDetailIcon').textContent = item.icon;
+            document.getElementById('hwDetailTitle').textContent = item.title;
+            document.getElementById('hwDetailType').textContent = item.type;
+            document.getElementById('hwDetailDesc').textContent = item.desc;
+            const ul = document.getElementById('hwDetailSpecs');
+            ul.innerHTML = '';
+            item.specs.forEach(s => {
+                const li = document.createElement('li'); li.textContent = s; ul.appendChild(li);
+            });
+        }
+        document.getElementById('hwBackBtn').onclick = () => { hwDetail.classList.add('hidden'); hwMaster.classList.remove('hidden'); };
+
+        /* ================= 3. KALKULATOR ================= */
+        // BigInt Network Math Helpers
+        const ip2Int = ip => ip.split('.').reduce((acc, octet) => (acc << 8n) + BigInt(octet), 0n);
+        const int2Ip = int => [(int>>24n)&255n, (int>>16n)&255n, (int>>8n)&255n, int&255n].join('.');
+        const toBinStr = int => int.toString(2).padStart(32, '0').match(/.{1,8}/g).join('.');
+
+        // Populate Prefix List
+        const prefixSelect = document.getElementById('prefixInput');
+        for(let i=8; i<=32; i++) {
+            const opt = document.createElement('option'); opt.value = i; opt.textContent = `/${i}`;
+            if(i===24) opt.selected = true; prefixSelect.appendChild(opt);
+        }
+
+        // Subnet Engine
+        document.getElementById('calcSubnetBtn').addEventListener('click', () => {
+            const ipStr = document.getElementById('ipInput').value.trim();
+            const prefix = parseInt(prefixSelect.value);
+            const errBox = document.getElementById('subnetError');
+            const resBox = document.getElementById('subnetResultBox');
+            const ipRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+            
+            if(!ipRegex.test(ipStr)) {
+                errBox.textContent = "Error: Format IPv4 tidak valid! (Contoh: 192.168.1.1)";
+                errBox.classList.remove('hidden'); resBox.classList.add('hidden'); return;
+            }
+            errBox.classList.add('hidden');
+
+            const ipInt = ip2Int(ipStr);
+            const maskInt = (0xFFFFFFFFn << BigInt(32 - prefix)) & 0xFFFFFFFFn;
+            const netInt = ipInt & maskInt;
+            const invMask = ~maskInt & 0xFFFFFFFFn;
+            const bcInt = netInt | invMask;
+            
+            let hostMinStr = "-", hostMaxStr = "-", totalHost = 0n, usableHost = 0n;
+            if (prefix === 32) { totalHost = 1n; usableHost = 1n; hostMinStr = int2Ip(netInt); hostMaxStr = int2Ip(netInt); }
+            else if (prefix === 31) { totalHost = 2n; usableHost = 2n; hostMinStr = int2Ip(netInt); hostMaxStr = int2Ip(bcInt); }
+            else {
+                totalHost = invMask + 1n; usableHost = totalHost - 2n;
+                hostMinStr = int2Ip(netInt + 1n); hostMaxStr = int2Ip(bcInt - 1n);
+            }
+
+            const firstOctet = parseInt(ipStr.split('.')[0]);
+            let ipClass = 'Unknown', ipType = 'Public';
+            if (firstOctet >= 1 && firstOctet <= 126) ipClass = 'Class A';
+            else if (firstOctet === 127) { ipClass = 'Loopback'; ipType = 'Loopback'; }
+            else if (firstOctet >= 128 && firstOctet <= 191) ipClass = 'Class B';
+            else if (firstOctet >= 192 && firstOctet <= 223) ipClass = 'Class C';
+            else if (firstOctet >= 224 && firstOctet <= 239) ipClass = 'Class D (Multicast)';
+            else if (firstOctet >= 240 && firstOctet <= 255) ipClass = 'Class E (Experimental)';
+
+            const secondOctet = parseInt(ipStr.split('.')[1]);
+            if ((firstOctet === 10) || (firstOctet === 172 && secondOctet >= 16 && secondOctet <= 31) || (firstOctet === 192 && secondOctet === 168)) ipType = 'Private';
+            if (firstOctet === 169 && secondOctet === 254) ipType = 'APIPA';
+
+            document.getElementById('resNet').textContent = int2Ip(netInt) + '/' + prefix;
+            document.getElementById('resBC').textContent = int2Ip(bcInt);
+            document.getElementById('resMask').textContent = int2Ip(maskInt);
+            document.getElementById('resTotal').textContent = totalHost.toString();
+            document.getElementById('resUsable').textContent = usableHost.toString();
+            document.getElementById('resRange').textContent = `${hostMinStr}  -  ${hostMaxStr}`;
+            document.getElementById('resClass').textContent = ipClass;
+            document.getElementById('resType').textContent = ipType;
+            document.getElementById('resBinIP').textContent = `IP   : ${toBinStr(ipInt)}`;
+            document.getElementById('resBinMask').textContent = `MASK : ${toBinStr(maskInt)}`;
+            resBox.classList.remove('hidden');
+        });
+
+        document.getElementById('copySubnetBtn').addEventListener('click', (e) => {
+            const txt = `Network: ${document.getElementById('resNet').innerText}\nBroadcast: ${document.getElementById('resBC').innerText}\nMask: ${document.getElementById('resMask').innerText}\nRange: ${document.getElementById('resRange').innerText}`;
+            navigator.clipboard.writeText(txt).catch(() => {
+                const t = document.createElement('textarea'); t.value = txt; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t);
+            });
+            e.target.textContent = 'Copied!'; setTimeout(() => e.target.textContent = 'Copy Text', 2000);
+        });
+
+        // 3.B SUBNET DRILL SYSTEM
+        let currentDrillAns = {};
+        document.getElementById('drillGenBtn').addEventListener('click', () => {
+            // Generate Random IP & Prefix
+            const randOctet = () => Math.floor(Math.random() * 255);
+            const ip = `${randOctet()}.${randOctet()}.${randOctet()}.${randOctet()}`;
+            const prefix = Math.floor(Math.random() * (30 - 24 + 1)) + 24; // Focus on /24 to /30
+            
+            document.getElementById('drillQuestion').textContent = `${ip} /${prefix}`;
+            
+            // Calc Answers silently
+            const maskInt = (0xFFFFFFFFn << BigInt(32 - prefix)) & 0xFFFFFFFFn;
+            const netInt = ip2Int(ip) & maskInt;
+            const bcInt = netInt | (~maskInt & 0xFFFFFFFFn);
+            
+            currentDrillAns = { net: int2Ip(netInt), bc: int2Ip(bcInt), mask: int2Ip(maskInt) };
+            
+            // Reset UI
+            ['drillNet', 'drillBc', 'drillMask'].forEach(id => {
+                document.getElementById(id).value = '';
+                document.getElementById(id).classList.remove('border-rose-500', 'border-emerald-500');
+            });
+            const fb = document.getElementById('drillFeedback');
+            fb.classList.add('hidden'); fb.className = 'text-center font-bold text-lg hidden p-3 rounded mt-2';
+            document.getElementById('drillCheckBtn').disabled = false;
+        });
+
+        document.getElementById('drillCheckBtn').addEventListener('click', () => {
+            if(!currentDrillAns.net) return;
+            
+            const uNet = document.getElementById('drillNet').value.trim();
+            const uBc = document.getElementById('drillBc').value.trim();
+            const uMask = document.getElementById('drillMask').value.trim();
+            
+            const checkFld = (id, uVal, cVal) => {
+                const el = document.getElementById(id);
+                el.classList.remove('border-slate-700', 'border-rose-500', 'border-emerald-500');
+                if(uVal === cVal) el.classList.add('border-emerald-500');
+                else el.classList.add('border-rose-500');
+                return uVal === cVal;
+            };
+
+            const netOk = checkFld('drillNet', uNet, currentDrillAns.net);
+            const bcOk = checkFld('drillBc', uBc, currentDrillAns.bc);
+            const maskOk = checkFld('drillMask', uMask, currentDrillAns.mask);
+            
+            const fb = document.getElementById('drillFeedback');
+            fb.classList.remove('hidden');
+            if(netOk && bcOk && maskOk) {
+                fb.textContent = "BENAR! Kerja Bagus!";
+                fb.classList.add('bg-emerald-900/50', 'text-emerald-400', 'border', 'border-emerald-500');
+                document.getElementById('drillCheckBtn').disabled = true;
+            } else {
+                fb.textContent = "Salah. Cek kembali perhitungan Anda!";
+                fb.classList.add('bg-rose-900/50', 'text-rose-400', 'border', 'border-rose-500');
+            }
+        });
+
+        // Base Converter
+        const cDec = document.getElementById('convDec'), cBin = document.getElementById('convBin'), cHex = document.getElementById('convHex');
+        const syncConv = (src) => {
+            try {
+                let v = 0;
+                if(src==='dec') { v = parseInt(cDec.value, 10); if(!isNaN(v)) { cBin.value = v.toString(2); cHex.value = v.toString(16); } }
+                if(src==='bin') { v = parseInt(cBin.value, 2); if(!isNaN(v)) { cDec.value = v.toString(10); cHex.value = v.toString(16); } }
+                if(src==='hex') { v = parseInt(cHex.value, 16); if(!isNaN(v)) { cDec.value = v.toString(10); cBin.value = v.toString(2); } }
+            } catch(e){}
+        };
+        cDec.addEventListener('input', () => syncConv('dec'));
+        cBin.addEventListener('input', () => syncConv('bin'));
+        cHex.addEventListener('input', () => syncConv('hex'));
+
+        // Bandwidth
+        const calcBw = () => {
+            const sz = parseFloat(document.getElementById('bwSize').value);
+            const sp = parseFloat(document.getElementById('bwSpeed').value);
+            if(isNaN(sz) || isNaN(sp) || sz<=0 || sp<=0) return;
+            const szMB = document.getElementById('bwUnit').value === 'GB' ? sz * 1024 : sz;
+            const spMBps = document.getElementById('bwSpeedUnit').value === 'Mbps' ? sp / 8 : sp;
+            const secs = szMB / spMBps;
+            if(!isFinite(secs)) return;
+            const h = Math.floor(secs/3600), m = Math.floor((secs%3600)/60), s = Math.floor(secs%60);
+            document.getElementById('bwResult').textContent = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        };
+        ['bwSize', 'bwUnit', 'bwSpeed', 'bwSpeedUnit'].forEach(id => document.getElementById(id).addEventListener('input', calcBw));
+
+        // RAID
+        document.getElementById('calcRaidBtn').addEventListener('click', () => {
+            const s = parseFloat(document.getElementById('raidSize').value);
+            const c = parseInt(document.getElementById('raidCount').value, 10);
+            const u = document.getElementById('raidUnit').value;
+            const tb = document.getElementById('raidResults');
+            if(isNaN(s) || isNaN(c) || c<2) { tb.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-rose-400">Min. 2 Disk.</td></tr>`; return; }
+            
+            let h = '';
+            const row = (t, us, p, f) => `<tr><td class="p-3 font-bold text-cyan-300">${t}</td><td class="p-3">${us} ${u}</td><td class="p-3">${p} ${u}</td><td class="p-3 text-emerald-400">${f}</td></tr>`;
+            
+            h += row("RAID 0", (s*c).toFixed(2), "0", "None");
+            if(c%2===0) h += row("RAID 1", ((s*c)/2).toFixed(2), ((s*c)/2).toFixed(2), `${c/2} Disk`);
+            if(c>=3) h += row("RAID 5", (s*(c-1)).toFixed(2), s.toFixed(2), "1 Disk");
+            if(c>=4 && c%2===0) h += row("RAID 10", ((s*c)/2).toFixed(2), ((s*c)/2).toFixed(2), "1 per pair");
+            tb.innerHTML = h;
+        });
+
+        // IPv6 Expander
+        document.getElementById('calcIpv6Btn').addEventListener('click', () => {
+            let ip = document.getElementById('ipv6Input').value.trim().toLowerCase();
+            if(!ip) return;
+            
+            let expanded = ip;
+            if(ip.includes('::')) {
+                const parts = ip.split('::');
+                const left = parts[0] ? parts[0].split(':') : [];
+                const right = parts[1] ? parts[1].split(':') : [];
+                const missing = 8 - (left.length + right.length);
+                const zeroes = Array(missing).fill('0000');
+                expanded = [...left, ...zeroes, ...right].map(p => p.padStart(4, '0')).join(':');
+            } else {
+                expanded = ip.split(':').map(p => p.padStart(4, '0')).join(':');
+            }
+            
+            let compressed = expanded.split(':').map(p => p.replace(/^0+/, '') || '0').join(':');
+            compressed = compressed.replace(/(?:^|:)0(?::0)+(?::|$)/, '::');
+            
+            document.getElementById('ipv6Expanded').textContent = expanded.length === 39 ? expanded : "Format Error";
+            document.getElementById('ipv6Compressed').textContent = compressed;
+        });
+
+        /* ================= 4. LAB & TOOLS ================= */
+        const ln = document.getElementById('labNotes');
+        ln.value = localStorage.getItem('tkj_notes') || '';
+        let lnTo;
+        ln.addEventListener('input', e => {
+            localStorage.setItem('tkj_notes', e.target.value);
+            const ns = document.getElementById('noteStatus');
+            ns.style.opacity = '1'; clearTimeout(lnTo);
+            lnTo = setTimeout(() => ns.style.opacity = '0', 2000);
+        });
+        document.getElementById('clearNotesBtn').addEventListener('click', () => { ln.value = ''; localStorage.removeItem('tkj_notes'); });
+        document.getElementById('exportNotesBtn').addEventListener('click', () => {
+            if(!ln.value) return;
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([ln.value], {type:'text/plain'}));
+            a.download = 'LabNotes.txt'; a.click();
+        });
+
+        document.getElementById('sgBtn').addEventListener('click', () => {
+            const w = document.getElementById('sgWan').value || '192.168.1.2/24';
+            const g = document.getElementById('sgGw').value || '192.168.1.1';
+            document.getElementById('sgOutput').value = `/ip address add address=${w} interface=ether1\n/ip route add gateway=${g}\n/ip dns set servers=8.8.8.8 allow-remote-requests=yes\n/ip firewall nat add chain=srcnat out-interface=ether1 action=masquerade`;
+        });
+
+        // Port Scanner Simulator
+        document.getElementById('startScanBtn').addEventListener('click', async () => {
+            const tgt = document.getElementById('scanTarget').value || '192.168.1.1';
+            const prog = document.getElementById('scanProgress');
+            const res = document.getElementById('scanResults');
+            const btn = document.getElementById('startScanBtn');
+            
+            btn.disabled = true;
+            btn.textContent = "Scanning...";
+            prog.style.width = '0%';
+            res.innerHTML = '';
+            
+            const commonPorts = [
+                {p: 21, s: 'FTP'}, {p: 22, s: 'SSH'}, {p: 23, s: 'Telnet'}, 
+                {p: 53, s: 'DNS'}, {p: 80, s: 'HTTP'}, {p: 443, s: 'HTTPS'},
+                {p: 3306, s: 'MySQL'}, {p: 8291, s: 'Winbox MikroTik'}
+            ];
+            
+            for(let i = 0; i <= 100; i += 5) {
+                prog.style.width = i + '%';
+                await new Promise(r => setTimeout(r, 120)); // simulated latency
+                
+                if(i % 15 === 0 && commonPorts.length > 0) {
+                    const portInfo = commonPorts.shift();
+                    const isOpen = Math.random() > 0.4; // 60% chance to be open for fun
+                    const div = document.createElement('div');
+                    div.className = `p-3 rounded-lg border shadow-sm transition-all animate-fadeIn ${isOpen ? 'bg-emerald-900/30 border-emerald-500/50 text-emerald-400' : 'bg-slate-900/50 border-slate-700/50 text-slate-500'}`;
+                    div.innerHTML = `<span class="font-bold text-sm">PORT ${portInfo.p}</span><br>${portInfo.s} <span class="text-[9px] uppercase px-1 rounded ml-1 ${isOpen ? 'bg-emerald-800 text-white' : 'bg-slate-700 text-slate-300'}">${isOpen ? 'OPEN' : 'CLOSED'}</span>`;
+                    res.appendChild(div);
+                }
+            }
+            btn.disabled = false;
+            btn.textContent = "Scan Ulang";
+        });
+
+        /* ================= 5. TERMINAL CLI (Interactive) ================= */
+        const termIn = document.getElementById('termInput');
+        const termOut = document.getElementById('termOutput');
+        
+        const delay = ms => new Promise(r => setTimeout(r, ms));
+        const printLine = (text, cls='text-emerald-400') => {
+            const div = document.createElement('div');
+            div.className = cls; div.innerHTML = text; termOut.appendChild(div);
+            termOut.scrollTop = termOut.scrollHeight;
+        };
+
+        let isTermRunning = false;
+        let currentDir = "/home/admin";
+        let termBooted = false;
+
+        termIn.addEventListener('keydown', async (e) => {
+            if(e.key === 'Enter' && !isTermRunning) {
+                const val = termIn.value.trim();
+                termIn.value = '';
+                if(!val) return;
+                
+                printLine(`root@tkj-server:${currentDir}# ${val}`, 'text-white');
+                isTermRunning = true;
+                termIn.disabled = true;
+
+                const args = val.split(' ').filter(Boolean);
+                const cmd = args[0].toLowerCase();
+                const target = args[1] || '127.0.0.1';
+
+                try {
+                    switch(cmd) {
+                        case 'clear': termOut.innerHTML = ''; break;
+                        case 'pwd': printLine(currentDir); break;
+                        case 'ls': 
+                            printLine("syslog.txt\t\tupdate_routerOS.sh\t<span class='text-blue-400 font-bold'>network_configs/</span>\n.secret_ssh_key\t\t<span class='text-blue-400 font-bold'>backup_mikrotik/</span>", "text-cyan-300"); 
+                            break;
+                        case 'cd':
+                            if(args[1]) {
+                                if(args[1] === '..') {
+                                    const parts = currentDir.split('/');
+                                    parts.pop();
+                                    currentDir = parts.length > 0 ? parts.join('/') : '/';
+                                } else {
+                                    currentDir = currentDir === '/' ? '/' + args[1] : currentDir + '/' + args[1];
+                                }
+                                document.querySelector('.text-cyan-400.font-bold').textContent = `root@tkj-server:${currentDir}#`;
+                            } else printLine("cd: missing operand", "text-rose-400");
+                            break;
+                        case 'whois':
+                            printLine(`Querying WHOIS registry database for ${target}...`, "text-amber-400");
+                            await delay(1200);
+                            printLine(`Domain Name: ${target.toUpperCase()}\nRegistry Domain ID: 2138514_DOMAIN_COM-VRSN\nRegistrar WHOIS Server: whois.markmonitor.com\nCreation Date: 1997-09-15T04:00:00Z\nRegistrar: MarkMonitor Inc.\nName Server: NS1.SERVER.NET\nDNSSEC: unsigned`, "text-slate-300");
+                            break;
+                        case 'ipconfig':
+                        case 'ifconfig':
+                            await delay(300);
+                            printLine(`Ethernet adapter eth0:\n   Connection-specific DNS Suffix  . : \n   IPv4 Address. . . . . . . . . . . : 192.168.1.10\n   Subnet Mask . . . . . . . . . . . : 255.255.255.0\n   Default Gateway . . . . . . . . . : 192.168.1.1`);
+                            break;
+                        case 'ping':
+                            printLine(`Pinging ${target} with 32 bytes of data:`);
+                            for(let i=0; i<4; i++) {
+                                await delay(800);
+                                const ms = Math.floor(Math.random() * 30) + 10;
+                                printLine(`Reply from ${target}: bytes=32 time=${ms}ms TTL=117`);
+                            }
+                            printLine(`Ping statistics for ${target}:\n    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)`);
+                            break;
+                        case 'tracert':
+                        case 'traceroute':
+                            printLine(`Tracing route to ${target} over a maximum of 5 hops:`);
+                            const hops = ['192.168.1.1', '10.1.1.1', '142.250.1.1', target];
+                            for(let i=0; i<hops.length; i++) {
+                                await delay(1000);
+                                printLine(`  ${i+1}    <1 ms    <1 ms    <1 ms  ${hops[i]}`);
+                            }
+                            printLine('Trace complete.');
+                            break;
+                        case 'nmap':
+                            printLine(`Starting Nmap 7.92 ( https://nmap.org ) at ${new Date().toISOString().split('T')[0]}`);
+                            await delay(1000);
+                            printLine(`Nmap scan report for ${target}\nHost is up (0.012s latency).`);
+                            await delay(800);
+                            printLine(`Not shown: 996 closed tcp ports (reset)\nPORT     STATE SERVICE\n22/tcp   open  ssh\n80/tcp   open  http\n443/tcp  open  https\n3306/tcp open  mysql`);
+                            break;
+                        case 'arp':
+                            printLine(`Interface: 192.168.1.10 --- 0x4`);
+                            await delay(300);
+                            printLine(`  Internet Address      Physical Address      Type`);
+                            printLine(`  192.168.1.1           a0-36-9f-12-34-56     Dynamic`);
+                            printLine(`  192.168.1.255         ff-ff-ff-ff-ff-ff     Static`);
+                            break;
+                        case 'netstat':
+                            await delay(400);
+                            printLine(`Active Connections\n  Proto  Local Address          Foreign Address        State\n  TCP    192.168.1.10:50123     104.21.34.5:443        ESTABLISHED\n  TCP    192.168.1.10:50124     142.250.190.1:80       TIME_WAIT`);
+                            break;
+                        case 'ssh':
+                            await delay(500);
+                            printLine(`ssh: connect to host ${target} port 22: Connection refused`, 'text-rose-400');
+                            break;
+                        case 'sudo':
+                            printLine(`[sudo] password for root: \n(Nice try, but you are already root!)`, 'text-cyan-400');
+                            break;
+                        case 'help':
+                            printLine(`Available commands:\n  ipconfig   - View IP configuration\n  ping       - Test reachability\n  tracert    - Trace route to host\n  nmap       - Port scanner\n  arp -a     - Show ARP table\n  netstat    - Active connections\n  whois      - Lookup domain info (NEW!)\n  ls, cd, pwd- Filesystem navigation (NEW!)\n  ssh        - Secure shell client\n  clear      - Clear terminal screen`);
+                            break;
+                        default:
+                            printLine(`bash: ${cmd}: command not found. Type 'help'.`, 'text-rose-400');
+                    }
+                } finally {
+                    isTermRunning = false;
+                    termIn.disabled = false;
+                    termIn.focus();
+                }
+            }
+        });
+        
+        document.getElementById('terminal-tab').addEventListener('click', async () => { 
+            if(!isTermRunning) termIn.focus(); 
+            // Terminal Boot Animation (One time only)
+            if(!termBooted) {
+                termBooted = true;
+                termOut.innerHTML = '';
+                isTermRunning = true;
+                termIn.disabled = true;
+                
+                printLine("INIT: Booting TKJ_OS Kernel 5.15.0-generic...", "text-slate-400 font-bold"); await delay(500);
+                printLine("Mounting virtual filesystems... [OK]", "text-emerald-400"); await delay(300);
+                printLine("Loading physical network interfaces (eth0)... [OK]", "text-emerald-400"); await delay(400);
+                printLine("Starting OpenSSH server daemon... [OK]", "text-emerald-400"); await delay(200);
+                printLine("Starting BGP Routing engine... [OK]", "text-emerald-400"); await delay(600);
+                
+                printLine("\n████████╗██╗  ██╗██╗       ███╗   ██╗███████╗████████╗\n╚══██╔══╝██║ ██╔╝██║       ████╗  ██║██╔════╝╚══██╔══╝\n   ██║   █████╔╝ ██║       ██╔██╗ ██║█████╗     ██║   \n   ██║   ██╔═██╗ ██║  ██╗  ██║╚██╗██║██╔══╝     ██║   \n   ██║   ██║  ██╗███████║  ██║ ╚████║███████╗   ██║   \n   ╚═╝   ╚═╝  ╚═╝╚══════╝  ╚═╝  ╚═══╝╚══════╝   ╚═╝   \n", "text-cyan-400");
+                printLine("TKJ Interactive Terminal [Version 3.0.0 Ultimate]\n(c) 2026 TKJ Systems. All rights reserved.\nType 'help' for commands.\n", "text-slate-300");
+                
+                isTermRunning = false;
+                termIn.disabled = false;
+                termIn.focus();
+                document.querySelector('.text-cyan-400.font-bold').textContent = `root@tkj-server:${currentDir}#`;
+            }
+        });
+
+        /* ================= 6. KUIS SYSTEM ================= */
+        const quizBank = [
+            { q:"Layer OSI manakah yang bertanggung jawab untuk routing?", o:["Layer 1 (Physical)", "Layer 2 (Data Link)", "Layer 3 (Network)", "Layer 4 (Transport)"], a:2 },
+            { q:"Protokol apa yang menerjemahkan IP Address menjadi MAC Address?", o:["DNS", "ARP", "DHCP", "ICMP"], a:1 },
+            { q:"Berapa panjang IPv6 Address?", o:["32 bit", "64 bit", "128 bit", "128 byte"], a:2 },
+            { q:"Port berapakah yang digunakan oleh HTTPS secara default?", o:["80", "443", "21", "22"], a:1 },
+            { q:"Apakah kepanjangan dari UTP?", o:["Universal Twisted Pair", "Unshielded Twisted Pair", "Unified Transport Protocol", "Unbound Transmission Pipe"], a:1 },
+            { q:"Perintah CLI di Windows untuk melihat MAC Address adalah?", o:["ipconfig /all", "ifconfig", "netstat -a", "ping -t"], a:0 },
+            { q:"Kelas IP Address yang memiliki range 192.0.0.0 - 223.255.255.255 adalah?", o:["Kelas A", "Kelas B", "Kelas C", "Kelas D"], a:2 },
+            { q:"Topologi jaringan yang menggunakan sebuah kabel pusat (backbone) disebut?", o:["Star", "Bus", "Ring", "Mesh"], a:1 },
+            { q:"Manakah IP yang termasuk Private IP Class B?", o:["10.0.0.1", "172.16.0.1", "192.168.1.1", "169.254.1.1"], a:1 },
+            { q:"Tipe konektor yang digunakan pada kabel Fiber Optic adalah?", o:["RJ-45", "BNC", "SC / LC", "DB-9"], a:2 },
+            { q:"Fitur pada router yang memetakan private IP ke public IP disebut?", o:["DHCP", "DNS", "NAT", "VLAN"], a:2 },
+            { q:"802.11ax merupakan standar teknologi nirkabel untuk?", o:["Wi-Fi 4", "Wi-Fi 5", "Wi-Fi 6", "Bluetooth"], a:2 },
+            { q:"Protokol email yang digunakan untuk MENGIRIM email adalah?", o:["POP3", "IMAP", "SMTP", "FTP"], a:2 },
+            { q:"Apakah fungsi dari perintah 'tracert'?", o:["Mengetes kecepatan", "Melihat jalur hop router", "Membersihkan cache DNS", "Mendapatkan IP otomatis"], a:1 },
+            { q:"Subnet mask 255.255.255.0 sama dengan Prefix?", o:["/8", "/16", "/24", "/32"], a:2 }
+        ];
+
+        let quizQuestions = [], currentQ = 0, quizScore = 0;
+        const qStart = document.getElementById('quizStartScreen'), qQna = document.getElementById('quizQnaScreen'), qRes = document.getElementById('quizResultScreen'), qOptBox = document.getElementById('quizOptions');
+
+        const shuffle = arr => { for(let i=arr.length-1; i>0; i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; };
+
+        document.getElementById('startQuizBtn').addEventListener('click', () => {
+            quizQuestions = shuffle([...quizBank]).slice(0, 10);
+            currentQ = 0; quizScore = 0;
+            qStart.classList.replace('block', 'hidden'); qRes.classList.add('hidden'); qQna.classList.remove('hidden');
+            loadQuestion();
+        });
+
+        const loadQuestion = () => {
+            const q = quizQuestions[currentQ];
+            document.getElementById('quizProgress').textContent = `Soal ${currentQ + 1} / 10`;
+            document.getElementById('quizScoreUI').textContent = `Skor: ${quizScore}`;
+            document.getElementById('quizQuestion').textContent = q.q;
+            qOptBox.innerHTML = '';
+            document.getElementById('nextQuizBtn').classList.add('hidden');
+            
+            q.o.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full text-left p-4 rounded-xl border border-slate-700 bg-slate-800/50 hover:bg-slate-700 hover:border-cyan-500 transition-all text-slate-200 font-mono text-sm';
+                btn.textContent = opt;
+                btn.onclick = () => handleAnswer(idx, btn, q.a);
+                qOptBox.appendChild(btn);
+            });
+        };
+
+        const handleAnswer = (selected, btn, correct) => {
+            Array.from(qOptBox.children).forEach(b => b.disabled = true);
+            if(selected === correct) {
+                btn.classList.replace('border-slate-700', 'border-emerald-500'); btn.classList.replace('bg-slate-800/50', 'bg-emerald-900/50');
+                quizScore += 10; document.getElementById('quizScoreUI').textContent = `Skor: ${quizScore}`;
+            } else {
+                btn.classList.replace('border-slate-700', 'border-rose-500'); btn.classList.replace('bg-slate-800/50', 'bg-rose-900/50');
+                qOptBox.children[correct].classList.replace('border-slate-700', 'border-emerald-500'); qOptBox.children[correct].classList.replace('bg-slate-800/50', 'bg-emerald-900/50');
+            }
+            document.getElementById('nextQuizBtn').classList.remove('hidden');
+        };
+
+        document.getElementById('nextQuizBtn').addEventListener('click', () => {
+            currentQ++;
+            if(currentQ < 10) loadQuestion();
+            else {
+                qQna.classList.add('hidden'); qRes.classList.remove('hidden'); qRes.classList.add('block');
+                document.getElementById('finalScore').textContent = quizScore;
+                let msg = quizScore >= 80 ? "Excellent! Insting Network Engineer sejati." : (quizScore >= 50 ? "Lumayan, tapi perlu banyak review materi." : "Waduh, sepertinya harus mengulang kelas TKJ dari awal.");
+                document.getElementById('quizFeedback').textContent = msg;
+            }
+        });
+        document.getElementById('retryQuizBtn').addEventListener('click', () => document.getElementById('startQuizBtn').click());
+
+        /* ================= 7. WIKI SYSTEM ================= */
+        const wikiData = [
+            { t: "OSI Model", c: "Konsep", d: "Standar konseptual yang membagi fungsi komunikasi jaringan menjadi 7 lapisan." },
+            { t: "IP Address", c: "Protokol", d: "Label numerik unik untuk setiap perangkat dalam jaringan komputer." },
+            { t: "Subnetting", c: "Konsep", d: "Teknik memecah jaringan besar menjadi jaringan kecil (subnet) untuk efisiensi." },
+            { t: "DNS", c: "Layanan", d: "Domain Name System. Menerjemahkan nama domain (google.com) menjadi IP." },
+            { t: "DHCP", c: "Layanan", d: "Memberikan alamat IP secara otomatis kepada klien di jaringan." },
+            { t: "MAC Address", c: "Hardware", d: "Alamat fisik unik (48-bit) yang tertanam pada Network Interface Card (NIC)." },
+            { t: "VLAN", c: "Konsep", d: "Virtual LAN. Membagi broadcast domain pada switch menjadi beberapa grup logis." },
+            { t: "Routing", c: "Proses", d: "Proses memindahkan paket data antar jaringan yang berbeda subnet/lokasi." },
+            { t: "Firewall", c: "Keamanan", d: "Sistem yang memantau dan mengontrol lalu lintas jaringan masuk/keluar." },
+            { t: "NAT", c: "Layanan", d: "Network Address Translation. Memetakan banyak IP private ke satu IP public." },
+            { t: "TCP", c: "Protokol", d: "Protokol layer transport yang connection-oriented dan menjamin paket sampai." },
+            { t: "UDP", c: "Protokol", d: "Protokol layer transport yang cepat namun tidak menjamin paket sampai (connectionless)." },
+            { t: "Ping", c: "Utility", d: "Menggunakan ICMP echo untuk mengecek konektivitas dua perangkat." },
+            { t: "Traceroute", c: "Utility", d: "Melihat rute (hop) yang dilewati paket data dari sumber ke tujuan." },
+            { t: "BGP", c: "Protokol", d: "Border Gateway Protocol. Protokol routing utama yang menggerakkan Internet." },
+            { t: "OSPF", c: "Protokol", d: "Protokol routing internal (IGP) berbasis link-state yang sangat cepat." },
+            { t: "Crimping", c: "Praktik", d: "Proses memasang konektor RJ-45 ke ujung kabel UTP menggunakan tang khusus." }
+        ];
+
+        const wg = document.getElementById('wikiGrid'), ws = document.getElementById('wikiSearch');
+        const renderWiki = (filter = '') => {
+            wg.innerHTML = '';
+            wikiData.filter(i => i.t.toLowerCase().includes(filter.toLowerCase()) || i.d.toLowerCase().includes(filter.toLowerCase())).forEach(item => {
+                wg.innerHTML += `
+                    <div class="glass-panel p-5 rounded-xl border border-cyan-800/30 hover:border-cyan-500/50 transition-colors">
+                        <div class="flex justify-between items-start mb-2"><h4 class="text-lg font-bold text-emerald-400">${item.t}</h4><span class="text-[10px] uppercase font-mono bg-slate-800 text-slate-400 px-2 py-1 rounded">${item.c}</span></div>
+                        <p class="text-sm text-slate-300 leading-relaxed">${item.d}</p>
+                    </div>`;
+            });
+        };
+        renderWiki(); ws.addEventListener('input', e => renderWiki(e.target.value));
+
+        /* ================= 8. TROUBLESHOOT FLOWCHART ================= */
+        const tsData = {
+            start: { q: "Apakah PC bisa terhubung ke Internet?", y: "ts_slow", n: "ts_lan" },
+            ts_slow: { q: "Apakah koneksi terasa sangat lambat?", y: "ts_bw", n: "ts_ok" },
+            ts_lan: { q: "Apakah ikon jaringan di PC disilang (X) merah?", y: "ts_cable", n: "ts_ip" },
+            ts_bw: { q: "Apakah ada klien lain yang sedang download besar/streaming?", y: "ts_limit", n: "ts_isp" },
+            ts_cable: { q: "Coba cek fisik kabel. Apakah lampu port di Switch/PC menyala?", y: "ts_port", n: "ts_crimping" },
+            ts_ip: { q: "Buka terminal, ketik 'ipconfig'. Apakah IP-nya 169.254.x.x (APIPA)?", y: "ts_dhcp", n: "ts_ping_gw" },
+            ts_ping_gw: { q: "Coba ping ke IP Gateway (Router). Apakah 'Reply'?", y: "ts_dns", n: "ts_route" },
+            ts_dns: { q: "Coba ping google.com. Apakah error 'could not find host'?", y: "ts_set_dns", n: "ts_firewall" },
+            ts_ok: { s: "✅ Jaringan normal. Tidak ada tindakan perbaikan yang diperlukan." },
+            ts_limit: { s: "🔧 Terapkan Bandwidth Management (Simple Queue) di MikroTik Anda." },
+            ts_isp: { s: "📞 Hubungi ISP Anda. Kemungkinan besar sedang terjadi gangguan masal." },
+            ts_port: { s: "🔧 Kabel terhubung, tapi sistem OS bermasalah. Coba Disable/Enable driver NIC di Device Manager." },
+            ts_crimping: { s: "✂️ Kabel UTP putus/longgar. Lakukan crimping ulang atau ganti kabel tersebut." },
+            ts_dhcp: { s: "⚙️ PC tidak mendapat IP dari Router. Cek apakah layanan DHCP Server di Router sudah berjalan." },
+            ts_route: { s: "❌ PC tidak bisa mencapai Router. Cek apakah IP Address PC Anda berada di dalam 1 subnet dengan IP Router." },
+            ts_set_dns: { s: "🌐 Masalah resolusi nama domain (DNS). Masukkan DNS manual (misal 8.8.8.8) di pengaturan adapter jaringan." },
+            ts_firewall: { s: "🛡️ Paket data di-drop oleh Router. Cek konfigurasi NAT (Masquerade) / Firewall di Router Anda." }
+        };
+
+        const tsTxt = document.getElementById('tsText'), tsBtnBox = document.getElementById('tsButtons'), tsReset = document.getElementById('tsResetBtn');
+
+        const loadTs = (nodeId) => {
+            const node = tsData[nodeId]; tsBtnBox.innerHTML = '';
+            if (node.s) { tsTxt.innerHTML = `<span class="text-emerald-400">${node.s}</span>`; tsReset.classList.remove('hidden'); } 
+            else {
+                tsTxt.textContent = node.q;
+                const btnY = document.createElement('button'); btnY.className = 'bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 rounded font-bold transition-colors'; btnY.textContent = 'YA'; btnY.onclick = () => loadTs(node.y);
+                const btnN = document.createElement('button'); btnN.className = 'bg-rose-600 hover:bg-rose-500 text-white px-6 py-2 rounded font-bold transition-colors'; btnN.textContent = 'TIDAK'; btnN.onclick = () => loadTs(node.n);
+                tsBtnBox.appendChild(btnY); tsBtnBox.appendChild(btnN); tsReset.classList.remove('hidden');
+            }
+        };
+
+        document.getElementById('tsStartBtn').addEventListener('click', () => loadTs('start'));
+        tsReset.addEventListener('click', () => {
+            tsReset.classList.add('hidden'); tsTxt.innerHTML = "Sistem diagnosis jaringan aktif.<br>Mulai deteksi sekarang.";
+            tsBtnBox.innerHTML = `<button id="tsStartBtn" class="bg-rose-600 hover:bg-rose-500 text-white px-8 py-3 rounded-xl transition-all shadow-[0_0_15px_rgba(244,63,94,0.3)]">Mulai Diagnosis</button>`;
+            document.getElementById('tsStartBtn').addEventListener('click', () => loadTs('start'));
+        });
+
+        /* ================= 9. FIREWALL SIMULATOR ================= */
+        let fwRules = [
+            { action: 'ALLOW', proto: 'TCP', src: 'ANY', dst: 'ANY', port: '80' },
+            { action: 'ALLOW', proto: 'TCP', src: 'ANY', dst: 'ANY', port: '443' },
+            { action: 'DROP', proto: 'ICMP', src: 'ANY', dst: 'ANY', port: 'ANY' }
+        ];
+
+        const fwRulesBody = document.getElementById('fwRulesBody');
+        
+        const renderFwRules = () => {
+            fwRulesBody.innerHTML = '';
+            if(fwRules.length === 0) {
+                fwRulesBody.innerHTML = '<tr><td colspan="7" class="p-3 text-center text-slate-500">Tabel Kosong. Sistem menggunakan Default Policy: DROP ALL.</td></tr>';
+                return;
+            }
+            fwRules.forEach((r, idx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-2 text-slate-500">${idx + 1}</td>
+                    <td class="p-2 font-bold ${r.action === 'ALLOW' ? 'text-emerald-400' : 'text-rose-400'}">${r.action}</td>
+                    <td class="p-2 text-cyan-200">${r.proto}</td>
+                    <td class="p-2">${r.src}</td>
+                    <td class="p-2">${r.dst}</td>
+                    <td class="p-2 text-amber-200">${r.port}</td>
+                    <td class="p-2 text-center"><button class="text-slate-500 hover:text-rose-400 font-bold transition-colors" onclick="deleteFwRule(${idx})">X</button></td>
+                `;
+                fwRulesBody.appendChild(tr);
+            });
+        };
+
+        window.deleteFwRule = (idx) => { fwRules.splice(idx, 1); renderFwRules(); };
+
+        document.getElementById('fwAddRuleBtn').addEventListener('click', () => {
+            const getVal = (id) => document.getElementById(id).value.trim().toUpperCase() || 'ANY';
+            fwRules.push({
+                action: document.getElementById('fwAction').value,
+                proto: document.getElementById('fwProto').value,
+                src: getVal('fwSrc'), dst: getVal('fwDst'), port: getVal('fwPort')
+            });
+            ['fwSrc', 'fwDst', 'fwPort'].forEach(id => document.getElementById(id).value = '');
+            renderFwRules();
+        });
+
+        document.getElementById('fwTestBtn').addEventListener('click', () => {
+            const src = document.getElementById('testSrc').value.trim().toUpperCase();
+            const dst = document.getElementById('testDst').value.trim().toUpperCase();
+            const proto = document.getElementById('testProto').value;
+            const port = document.getElementById('testPort').value.trim().toUpperCase();
+            const resBox = document.getElementById('fwTestResult');
+
+            let finalAction = 'DROP'; // Default deny policy
+            let matchedRuleIdx = -1;
+
+            for(let i=0; i<fwRules.length; i++) {
+                const r = fwRules[i];
+                const matchProto = (r.proto === 'ANY' || r.proto === proto);
+                const matchSrc = (r.src === 'ANY' || r.src === src);
+                const matchDst = (r.dst === 'ANY' || r.dst === dst);
+                const matchPort = (r.port === 'ANY' || r.port === port || r.proto === 'ICMP'); // ICMP doesn't strictly use ports
+
+                if(matchProto && matchSrc && matchDst && matchPort) {
+                    finalAction = r.action;
+                    matchedRuleIdx = i + 1;
+                    break;
+                }
+            }
+
+            resBox.classList.remove('hidden', 'bg-emerald-900/50', 'text-emerald-400', 'border-emerald-500', 'bg-rose-900/50', 'text-rose-400', 'border-rose-500');
+            resBox.classList.add('border');
+            
+            if(finalAction === 'ALLOW') {
+                resBox.classList.add('bg-emerald-900/50', 'text-emerald-400', 'border-emerald-500');
+                resBox.innerHTML = `✅ PACKET ALLOWED <span class="text-xs block text-slate-300 font-normal mt-1">Matched Rule #${matchedRuleIdx}</span>`;
+            } else {
+                resBox.classList.add('bg-rose-900/50', 'text-rose-400', 'border-rose-500');
+                if(matchedRuleIdx !== -1) {
+                    resBox.innerHTML = `❌ PACKET DROPPED <span class="text-xs block text-slate-300 font-normal mt-1">Matched Rule #${matchedRuleIdx}</span>`;
+                } else {
+                    resBox.innerHTML = `❌ PACKET DROPPED <span class="text-xs block text-slate-300 font-normal mt-1">Default Deny Policy (No match)</span>`;
+                }
+            }
+        });
+
+        renderFwRules();
+
+    }); // End of fully enclosed DOMContentLoaded
+</script>
+</body>
+</html>
